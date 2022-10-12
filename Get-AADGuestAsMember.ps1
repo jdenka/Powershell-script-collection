@@ -1,0 +1,1 @@
+Get-AzureADuser -All $true -Filter "Usertype eq 'Member' and CreationType eq 'Invitation'" 
