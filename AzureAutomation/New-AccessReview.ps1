@@ -19,10 +19,10 @@ param
 )
 
 # Connection details for the tenant.
-$AppId = '1ad3843a-6201-4a70-93a6-e6bb3450217b'
+$AppId = 'Application ID goes here'
 $AppSecret = Get-AutomationVariable -Name 'AppSecret'
 $Scope = "https://graph.microsoft.com/.default"
-$TenantName = "soet.info"
+$TenantName = "Tenant domain goes here"
 
 $Url = "https://login.microsoftonline.com/$TenantName/oauth2/v2.0/token"
 
