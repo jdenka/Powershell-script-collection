@@ -10,10 +10,10 @@ $Groups | Foreach-Object {
     #Get Group Owners
     $GroupOwners = Get-UnifiedGroupLinks -LinkType Owners -Identity $_.Id | Select-Object DisplayName, PrimarySmtpAddress
     $GroupData += [PSCustomObject]@{
-        GroupName = $_.Alias
+        GroupName  = $_.Alias
         GroupEmail = $_.PrimarySmtpAddress
-        OwnerName = $GroupOwners.DisplayName -join "; "
-        OwnerIDs = $GroupOwners.PrimarySmtpAddress -join "; "
+        OwnerName  = $GroupOwners.DisplayName -join "; "
+        OwnerIDs   = $GroupOwners.PrimarySmtpAddress -join "; "
     }
 }
 #Get Groups Data

@@ -1,7 +1,7 @@
 ﻿Connect-AzureAD
 $GroupName = 'YourGroupGoesHere'
 
-$Template = Get-AzureADDirectorySettingTemplate | Where-Object {$_.DisplayName -eq 'Group.Unified'}
+$Template = Get-AzureADDirectorySettingTemplate | Where-Object { $_.DisplayName -eq 'Group.Unified' }
 $Setting = $Template.CreateDirectorySetting()
 New-AzureADDirectorySetting -DirectorySetting $Setting
 $Setting = Get-AzureADDirectorySetting -Id (Get-AzureADDirectorySetting | Where-Object -Property DisplayName -Value "Group.Unified" -EQ).id

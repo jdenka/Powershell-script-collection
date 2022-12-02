@@ -7,5 +7,5 @@ Get-MgServicePrincipal -Filter "tags/any(t:t eq 'WindowsAzureActiveDirectoryInte
     Write-Host "Adding notification email to $($_.DisplayName) ($($_.AppId))..."
     $_.notificationEmailAddresses += $notificationEmailToAdd
     Update-MgServicePrincipal -ServicePrincipalId $_.Id `
-                              -NotificationEmailAddresses $_.NotificationEmailAddresses
+        -NotificationEmailAddresses $_.NotificationEmailAddresses
 }

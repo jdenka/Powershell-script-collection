@@ -5,17 +5,17 @@
 # Store the application secret as a encrypted Automation Variable to make it more secure.
 param
 (
-	[Parameter (Mandatory = $True)]
+  [Parameter (Mandatory = $True)]
  	[string] $GroupName,
 
-	[Parameter (Mandatory = $True)]
-	[string] $DisplayName,
+  [Parameter (Mandatory = $True)]
+  [string] $DisplayName,
 
-	[Parameter (Mandatory = $True)]
-	[string] $Reviewer1,
+  [Parameter (Mandatory = $True)]
+  [string] $Reviewer1,
 
-	[Parameter (Mandatory = $True)]
-	[string] $Reviewer2
+  [Parameter (Mandatory = $True)]
+  [string] $Reviewer2
 )
 
 # Connection details for the tenant.
@@ -32,26 +32,26 @@ Add-Type -AssemblyName System.Web
 
 # Create body for the exposed API
 $Body = @{
-    client_id     = $AppId
-    client_secret = $AppSecret
-    scope         = $Scope
-    grant_type    = 'client_credentials'
+  client_id     = $AppId
+  client_secret = $AppSecret
+  scope         = $Scope
+  grant_type    = 'client_credentials'
 }
 
 # Splat the parameters for Invoke-Restmethod for cleaner code
 $PostSplat = @{
-    ContentType = 'application/x-www-form-urlencoded'
-    Method      = 'POST'
-    # Create string by joining bodylist with '&'
-    Body        = $Body
-    Uri         = $Url
+  ContentType = 'application/x-www-form-urlencoded'
+  Method      = 'POST'
+  # Create string by joining bodylist with '&'
+  Body        = $Body
+  Uri         = $Url
 }
 
 # Request the token!
 $Request = Invoke-RestMethod @PostSplat
 
 $Header = @{
-    Authorization = "$($Request.token_type) $($Request.access_token)"
+  Authorization = "$($Request.token_type) $($Request.access_token)"
 }
 
 # Get ObjectIds from Group and Reviewers
