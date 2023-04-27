@@ -7,19 +7,55 @@ function Get-Passphrase {
     param(
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [string]$Delimiter
+        [string]$Delimiter,
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Count
     )
-    if (-not $Delimiter) {
-        $Delimiter = "-"
+    $DefaultDelimiter = "-"
+    if (($result = Read-Host "Select a delimiter (default: $DefaultDelimiter)") -eq '') {
+        $Delimiter = $DefaultDelimiter
+    }
+    else {
+        $Delimiter = $result
+    }
+    $DefaultCount = 1
+    if (($cresult = Read-Host "Select a count (default: $DefaultCount)") -eq '') {
+        $Count = $DefaultCount
+    }
+    else {
+        $Count = $cresult
     }
     try {
         $uri = "https://www.randomlists.com/data/words.json"
         $json = Invoke-RestMethod -Uri $uri
-        $words = $json.data | Get-Random -Count 4
-        $passphrase = $words -join $Delimiter
-        Write-Output "Passphrase: $passphrase"
     }
     catch {
         Write-Error "Error: $($Error[0].Exception.Message)"
     }
+    if ($Count -gt 1) {
+        foreach($i in 1..$Count) {
+            $words = $json.data | Get-Random -Count 4
+            $end = Get-Random -Maximum 100
+            $capitalized = @()
+            foreach ($word in $words) {
+                $word = $word.Substring(0,1).ToUpper() + $word.Substring(1)
+                $capitalized += $word
+            }
+            $passphrase = $capitalized -join $Delimiter
+            Write-Output "$($passphrase + $end)"
+        }
+    }
+    else {
+        $words = $json.data | Get-Random -Count 4
+        $capitalized = @()
+        $end = Get-Random -Maximum 100
+        foreach ($word in $words) {
+            $word = $word.Substring(0,1).ToUpper() + $word.Substring(1)
+            $capitalized += $word
+        }
+        $passphrase = $capitalized -join $Delimiter
+        Write-Output "$($passphrase + $end)"
+    }
 }
+Get-Passphrase
