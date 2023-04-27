@@ -36,7 +36,7 @@ function Get-Passphrase {
     if ($Count -gt 1) {
         foreach($i in 1..$Count) {
             $words = $json.data | Get-Random -Count 4
-            $end = Get-Random -Maximum 100
+            $end = Get-Random -Maximum 1000 -Minimum 100
             $capitalized = @()
             foreach ($word in $words) {
                 $word = $word.Substring(0,1).ToUpper() + $word.Substring(1)
@@ -49,7 +49,7 @@ function Get-Passphrase {
     else {
         $words = $json.data | Get-Random -Count 4
         $capitalized = @()
-        $end = Get-Random -Maximum 100
+        $end = Get-Random -Maximum 1000 -Minimum 100
         foreach ($word in $words) {
             $word = $word.Substring(0,1).ToUpper() + $word.Substring(1)
             $capitalized += $word
