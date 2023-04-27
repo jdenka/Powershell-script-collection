@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
 This passphrase generator uses the RandomLists API to generate a random passphrase.
-It is partly written with Github Copilot and GPT-3
 
 .DESCRIPTION
 Get a random passphrase using https://www.randomlists.com/data/words.json as a source.
 It then combines 4 random words from the list with a random number between 100 and 1000.
+It is partly written with Github Copilot and GPT-3
 
 .PARAMETER Delimiter
 This parameter identifies what kind of delimiter to use between the words.
