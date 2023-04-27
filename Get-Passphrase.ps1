@@ -34,12 +34,12 @@ function Get-Passphrase {
         Write-Error "Error: $($Error[0].Exception.Message)"
     }
     if ($Count -gt 1) {
-        foreach($i in 1..$Count) {
+        foreach ($i in 1..$Count) {
             $words = $json.data | Get-Random -Count 4
             $end = Get-Random -Maximum 1000 -Minimum 100
             $capitalized = @()
             foreach ($word in $words) {
-                $word = $word.Substring(0,1).ToUpper() + $word.Substring(1)
+                $word = $word.Substring(0, 1).ToUpper() + $word.Substring(1)
                 $capitalized += $word
             }
             $passphrase = $capitalized -join $Delimiter
@@ -51,7 +51,7 @@ function Get-Passphrase {
         $capitalized = @()
         $end = Get-Random -Maximum 1000 -Minimum 100
         foreach ($word in $words) {
-            $word = $word.Substring(0,1).ToUpper() + $word.Substring(1)
+            $word = $word.Substring(0, 1).ToUpper() + $word.Substring(1)
             $capitalized += $word
         }
         $passphrase = $capitalized -join $Delimiter
