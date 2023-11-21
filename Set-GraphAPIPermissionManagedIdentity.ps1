@@ -8,15 +8,8 @@ $MIName = "" # Name of the Managed Identity
 
 $Permissions = @( # Permissions to be set to the Managed Identity
     "User.Read.All"
-    "User.ReadWrite.All"
-    "Directory.Read.All"
-    "Directory.ReadWrite.All"
-    "Directory.AccessAsUser.All"
     "Group.Read.All"
-    "Group.ReadWrite.All"
     "GroupMember.Read.All"
-    "GroupMember.ReadWrite.All"
-    "GroupMember.ReadWriteSecurity.All"
 )
 
 $GraphAppId = "00000003-0000-0000-c000-000000000000" # Application ID of the Graph API
