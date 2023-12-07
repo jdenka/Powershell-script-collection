@@ -23,9 +23,9 @@ function Get-LastSuccessfulSignin {
     $uri = "https://graph.microsoft.com/beta/users/$($u.Id)?select=signInActivity"
     try {
         $result = Invoke-MgGraphRequest -Method GET -Uri $uri -ErrorAction Stop
-        Write-Output "Last successful signin from user $($u.UserPrincipalName) `n $($result.signInActivity.lastSuccessfulSignInDateTime) `n Last successful non interactive signin `n $($result.signInActivity.lastNonInteractiveSignInDateTime)"
+        Write-Output "Last successful sign in from user $($u.UserPrincipalName) `n $($result.signInActivity.lastSuccessfulSignInDateTime) `n Last successful non interactive sign in `n $($result.signInActivity.lastNonInteractiveSignInDateTime)"
     }
     catch {
-        Write-Error "Failed to get last successful signin for user $($u.UserPrincipalName)"
+        Write-Error "Failed to get last successful sign in for user $($u.UserPrincipalName)"
     }
 }
