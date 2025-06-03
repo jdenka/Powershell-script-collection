@@ -24,5 +24,5 @@ foreach($Role in $AppRole) {
         "ResourceId" = $GraphSP.Id
         "AppRoleId" = $Role.Id
     }
-    New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $ApproleAssignment.PrincipalId -AppRoleAssignment $ApproleAssignment -Verbose
+    New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $ApproleAssignment.PrincipalId -BodyParameter $ApproleAssignment -Verbose
 }
