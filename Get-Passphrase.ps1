@@ -1,92 +1,104 @@
 <#
 .SYNOPSIS
-This passphrase generator uses the RandomLists API to generate a random passphrase.
+This passphrase generator uses a local wordlist to generate a random passphrase.
 
 .DESCRIPTION
-Get a random passphrase using https://www.randomlists.com/data/words.json as a source.
-It then combines 4 random words from the list with a random number between 100 and 1000.
-It is partly written with Github Copilot and GPT-3
+Get a random passphrase using a bundled local wordlist (20,000 words).
+It combines 4 random words with a random number between 100 and 1000.
+No external API calls required - works offline and is more secure.
 
 .PARAMETER Delimiter
 This parameter identifies what kind of delimiter to use between the words.
+Default is "-".
 
 .PARAMETER Count
 This parameter identifies how many passphrases to generate.
+Default is 1.
+
+.PARAMETER WordCount
+Number of words to include in the passphrase.
+Default is 4.
+
+.PARAMETER NoNumber
+Skip adding the random number suffix.
 
 .EXAMPLE
-1) Get-Passphrase -Delimiter "_" -Count 10 | Out-File -FilePath "C:\temp\passphrases.txt"
+Get-Passphrase -Delimiter "_" -Count 10 | Out-File -FilePath "C:\temp\passphrases.txt"
 Will generate a file with 10 passphrases separated by an underscore.
-2) Get-Passphrase 
-Will generate a single passphrase separated by a dash by default, if you are using the default values.
-The script will ask about delimiter and how many passphrases to generate.
+
+.EXAMPLE
+Get-Passphrase
+Will generate a single passphrase separated by a dash by default.
+
+.EXAMPLE
+Get-Passphrase -WordCount 5 -NoNumber
+Generates a 5-word passphrase without the number suffix.
 
 .NOTES
 Author: Dennis Johansson
+Updated: 2026-03-11 - Replaced external API with local wordlist for security
 #>
 function Get-Passphrase {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [string]$Delimiter,
+        [string]$Delimiter = "-",
+        
         [Parameter(Mandatory = $false)]
-        [ValidateNotNullOrEmpty()]
-        [string]$Count
+        [ValidateRange(1, 100)]
+        [int]$Count = 1,
+        
+        [Parameter(Mandatory = $false)]
+        [ValidateRange(3, 8)]
+        [int]$WordCount = 4,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$NoNumber
     )
-    $DefaultDelimiter = "-"
-    if (-not $Delimiter) {
-        if (($result = Read-Host "Select a delimiter (default: $DefaultDelimiter)") -eq '') {
-            $Delimiter = $DefaultDelimiter
-        }
-        else {
-            $Delimiter = $result
-        }
+    
+    # Determine wordlist path (same directory as script)
+    $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+    $wordlistPath = Join-Path $scriptDir "wordlist.txt"
+    
+    # Load wordlist
+    if (-not (Test-Path $wordlistPath)) {
+        Write-Error "Wordlist not found at: $wordlistPath. Please ensure wordlist.txt exists in the same directory as this script."
+        return
     }
-    else {
-        ## Do nothing
-    }
-    $DefaultCount = 1
-    if (-not $Count) {
-        if (($cresult = Read-Host "Select a count (default: $DefaultCount)") -eq '') {
-            $Count = $DefaultCount
-        }
-        else {
-            $Count = $cresult
-        }
-    }
-    else {
-        ## Do nothing
-    }
+    
     try {
-        $uri = "https://www.randomlists.com/data/words.json"
-        $json = Invoke-RestMethod -Uri $uri
+        $wordlist = Get-Content $wordlistPath -ErrorAction Stop
+        if ($wordlist.Count -lt 1000) {
+            Write-Warning "Wordlist contains only $($wordlist.Count) words. Recommended minimum is 1000 for security."
+        }
     }
     catch {
-        Write-Error "Error: $($Error[0].Exception.Message)"
+        Write-Error "Failed to load wordlist: $($_.Exception.Message)"
+        return
     }
-    if ($Count -gt 1) {
-        foreach ($i in 1..$Count) {
-            $words = $json.data | Get-Random -Count 4
-            $end = Get-Random -Maximum 1000 -Minimum 100
-            $capitalized = @()
-            foreach ($word in $words) {
-                $word = $word.Substring(0, 1).ToUpper() + $word.Substring(1)
-                $capitalized += $word
-            }
-            $passphrase = $capitalized -join $Delimiter
-            Write-Output "$($passphrase + $end)"
+    
+    # Generate passphrases
+    for ($i = 1; $i -le $Count; $i++) {
+        $words = $wordlist | Get-Random -Count $WordCount
+        
+        # Capitalize first letter of each word
+        $capitalized = foreach ($word in $words) {
+            $word.Substring(0, 1).ToUpper() + $word.Substring(1).ToLower()
         }
-    }
-    else {
-        $words = $json.data | Get-Random -Count 4
-        $capitalized = @()
-        $end = Get-Random -Maximum 1000 -Minimum 100
-        foreach ($word in $words) {
-            $word = $word.Substring(0, 1).ToUpper() + $word.Substring(1)
-            $capitalized += $word
-        }
+        
         $passphrase = $capitalized -join $Delimiter
-        Write-Output "$($passphrase + $end)"
+        
+        # Add random number suffix unless -NoNumber specified
+        if (-not $NoNumber) {
+            $suffix = Get-Random -Minimum 100 -Maximum 1000
+            $passphrase = "$passphrase$suffix"
+        }
+        
+        Write-Output $passphrase
     }
 }
-Get-Passphrase
+
+# Only run interactively if script is executed directly (not dot-sourced)
+if ($MyInvocation.InvocationName -ne '.') {
+    Get-Passphrase
+}
